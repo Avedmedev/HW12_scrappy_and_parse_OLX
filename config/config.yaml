@@ -1,0 +1,18 @@
+postgres:
+  user: postgres
+  password: 12345
+  database: postgres
+  port: 5432
+  host: 127.0.0.1
+
+mongo:
+  host: 127.0.0.1
+  port: 27017
+  database: m_scrappy
+  max_pool_size: 10
+
+app:
+  host: 127.0.0.1
+  port: 8090
+
+
