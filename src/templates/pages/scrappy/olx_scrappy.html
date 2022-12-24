@@ -7,7 +7,27 @@
     class="d-flex flex-column align-items-center justify-content-center bg-secondary"
     style="height: 155px"
   >
-    Scrapping results
+    Результаты анализа объявлений на сайте www.olx.ua
+      трёхкомнатных квартир в новостройках,
+      которые сданы в эксплуатацию и расположены в Киеве
   </p>
+          <div class="container">
+                <div class="row mb-3 text-center">
+                  <div class="col-md-3 themed-grid-col">Title</div>
+                  <div class="col-md-3 themed-grid-col">Price</div>
+                  <div class="col-md-3 themed-grid-col">Location - pub date</div>
+                  <div class="col-md-3 themed-grid-col">Square</div>
+                </div>
+            {% if flats %}
+                {% for flat in flats %}
+                <div class="row mb-3 text-center">
+                  <div class="col-md-3 themed-grid-col">{{flat.title}}</div>
+                  <div class="col-md-3 themed-grid-col">{{flat.price}}</div>
+                  <div class="col-md-3 themed-grid-col">{{flat.location}}</div>
+                  <div class="col-md-3 themed-grid-col">{{flat.square}}</div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
 </div>
 {% endblock %}

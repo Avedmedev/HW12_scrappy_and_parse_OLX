@@ -7,15 +7,28 @@
     <div class="row justify-content-center">
         <form class="col-sm-6" action="/scrapping" method="post">
             <div class="form-group">
-                <input class="form-control col-sm-12" type="text" placeholder="URL for scrappy" name="url"/>
+                <input class="form-control col-sm-12" type="text" placeholder="{{ url_name if url_name else 'URL for scrappy' }}" name="url_name" value="{{url_name}}"/>
             </div>
-            <!--div class="form-group">
-                <input class="col-sm-12 form-control" type="password" placeholder="password" name="password" required/>
-            </div-->
             <div class="form-group">
-                <button class="btn btn-primary col-sm-12" type="submit">GO!!!</button>
+                <button class="btn btn-primary col-sm-12" type="submit">Analise</button>
             </div>
         </form>
+        <div class="container">
+            {% if result %}
+                <div class="row mb-3 text-center">
+                  <div class="col-md-3 themed-grid-col">Tag</div>
+                  <div class="col-md-3 themed-grid-col">Attrs</div>
+                  <div class="col-md-6 themed-grid-col">Text</div>
+                </div>
+                {% for tag, attrs, text  in result %}
+                <div class="row mb-3 text-center">
+                  <div class="col-md-3 themed-grid-col">{{ tag }}</div>
+                  <div class="col-md-3 themed-grid-col">{{ attrs }}</div>
+                  <div class="col-md-6 themed-grid-col">{{ text }}</div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

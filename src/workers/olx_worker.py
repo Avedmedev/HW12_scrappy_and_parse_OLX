@@ -7,20 +7,23 @@ import logging
 
 import aiohttp
 from bs4 import BeautifulSoup
-from bson import ObjectId
+
+from src.repository.mongo.olx_flats import insert_data
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] - %(name)s - %(funcName)s(%(lineno)d) - %(message)s'
+)
 
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] - %(name)s - %(funcName)s(%(lineno)d) - %(message)s')
-
-
-def get_url_dict(filename: Path) -> dict:
+def get_olx_url_dict(filename: Path) -> dict:
     logging.info(filename)
     with open(filename) as fp:
         url_list = json.load(fp)
     return url_list.get('urls').get('https://www.olx.ua')
 
 
-url_data = get_url_dict(Path(__file__).parent / 'url_dict.json')
+url_data = get_olx_url_dict(Path(__file__).parent / 'url_dict.json')
 
 
 all_pages = {}
@@ -28,7 +31,7 @@ all_pages = {}
 
 async def get_pages_count(page: BeautifulSoup) -> int:
     el_quotes = url_data['pages_quote']
-    pagination_quote = page.find_all(el_quotes['tag'], attrs=el_quotes['attrs'])  # проверить как работает этот параметр
+    pagination_quote = page.find_all(el_quotes['tag'], attrs=el_quotes['attrs'])
     pages = [quote.text for quote in pagination_quote]
     pages_count = max(map(int, (filter(str.isdigit, pages))))
 
@@ -40,27 +43,10 @@ async def get_pages_count(page: BeautifulSoup) -> int:
 async def produce_page_data(session, url: str, q_pages: Queue):
     async with session.get(url) as resp:
         assert resp.status == 200
-        logging.info(url)
         resp_text = BeautifulSoup(await resp.text(), 'html.parser')
         all_pages[url] = resp_text
         await q_pages.put((url, resp_text))
         return resp_text
-
-
-async def insert_data(collection, data_list):
-    flats = []
-
-    for data in data_list:
-        flats.append({
-            '_id': ObjectId(),
-            'title': data[0].text,
-            'price': data[1].text,
-            'location': data[2].text,
-            'square': data[3].text[len(data[2].text):]
-        })
-
-    values = await collection.insert_many(flats)
-    return values
 
 
 async def parse_data(page: BeautifulSoup, mongo):
